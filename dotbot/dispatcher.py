@@ -3,6 +3,7 @@ from .plugin import Plugin
 from .messenger import Messenger
 from .context import Context
 
+
 class Dispatcher(object):
     def __init__(self, base_directory):
         self._log = Messenger()
@@ -18,6 +19,7 @@ class Dispatcher(object):
 
     def dispatch(self, tasks):
         success = True
+        action = None
         for task in tasks:
             for action in task:
                 handled = False
@@ -37,11 +39,15 @@ class Dispatcher(object):
                 if not handled:
                     success = False
                     self._log.error('Action %s not handled' % action)
+            # If action is a shell command and it fails, don't execute other tasks
+            if not success and action == 'shell':
+                break
         return success
 
     def _load_plugins(self):
         self._plugins = [plugin(self._context)
             for plugin in Plugin.__subclasses__()]
+
 
 class DispatchError(Exception):
     pass
