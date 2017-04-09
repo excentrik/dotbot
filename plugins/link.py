@@ -30,7 +30,7 @@ class Link(dotbot.Plugin):
             force = defaults.get('force', False)
             relink = defaults.get('relink', False)
             create = defaults.get('create', False)
-            backup = defaults.get('backup', False)
+            backup = defaults.get('backup', True)
             if isinstance(source, dict):
                 # extended config
                 relative = source.get('relative', relative)
@@ -43,7 +43,11 @@ class Link(dotbot.Plugin):
                 path = self._default_source(destination, source)
             path = os.path.expandvars(os.path.expanduser(path))
             if backup:
-                success &= self._create_dir(os.path.join(self._context.base_directory(), backup))
+                backup_directory=os.path.join(os.path.expanduser('~'), 'dotfiles_backup')
+                success &= self._create_dir(backup_directory)
+                if success:
+                    self._log.info('Created backup directory: %s' % backup_directory)
+
             if not self._exists(os.path.join(self._context.base_directory(), path)):
                 if backup:
                     success &= self._move(destination, path)
@@ -192,7 +196,7 @@ class Link(dotbot.Plugin):
             source = self._relative_path(absolute_source, destination)
         else:
             if backup:
-                backup = os.path.join(backup, self._timestamp, source)
+                backup = os.path.join(os.path.expanduser('~'), 'dotfiles_backup', self._timestamp, source)
             source = absolute_source
         if not self._exists(link_name) and self._is_link(link_name) and self._link_destination(link_name) != source:
             self._log.warning('Invalid link %s -> %s' %
@@ -210,11 +214,11 @@ class Link(dotbot.Plugin):
                 self._log.lowinfo('Creating link %s -> %s' % (link_name, source))
                 success = True
         elif self._exists(link_name) and not self._is_link(link_name):
-             if backup:
+            if backup:
                 success = self._move(link_name, backup)
                 if success:
                     success &= self._link(source, link_name, relative, backup)
-             else:
+            else:
                 self._log.warning('%s already exists but is a regular file or directory' % link_name)
         elif self._is_link(link_name) and self._link_destination(link_name) != source:
             self._log.warning('Incorrect link %s -> %s' %
