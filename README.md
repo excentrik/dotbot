@@ -70,8 +70,9 @@ editing the variables in the `install` script appropriately.
 Setting up Dotbot as a submodule or subrepo locks it on the current version.
 You can upgrade Dotbot at any point. If using a submodule, run `git submodule
 update --remote dotbot`, substituting `dotbot` with the path to the Dotbot
-submodule. If using a subrepo, run `git fetch && git checkout origin/master` in
-the Dotbot directory.
+submodule; be sure to commit your changes before running `./install`, otherwise
+the old version of Dotbot will be checked out by the install script. If using a
+subrepo, run `git fetch && git checkout origin/master` in the Dotbot directory.
 
 ### Full Example
 
@@ -264,6 +265,7 @@ command itself.
     command: read var && echo Your variable is $var
     stdin: true
     stdout: true
+    description: Reading and printing variable
   -
     command: read fail
     stderr: true
@@ -354,7 +356,7 @@ Copyright (c) 2014-2017 Anish Athalye. Released under the MIT License. See
 
 [init-dotfiles]: https://github.com/Vaelatern/init-dotfiles
 [dotfiles-template]: https://github.com/anishathalye/dotfiles_template
-[inspiration]: https://github.com/anishathalye/dotbot/wiki/List-of-Dotbot-Users
+[inspiration]: https://github.com/anishathalye/dotbot/wiki/Users
 [managing-dotfiles-post]: http://www.anishathalye.com/2014/08/03/managing-your-dotfiles/
 [wiki]: https://github.com/anishathalye/dotbot/wiki
 [contributing]: CONTRIBUTING.md
